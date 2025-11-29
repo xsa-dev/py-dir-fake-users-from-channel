@@ -1,2 +1,0 @@
-[console_scripts]
-telegram-scanner = telegram_scanner.main:main

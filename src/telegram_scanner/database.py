@@ -12,6 +12,7 @@ class User:
     username: Optional[str]
     first_name: Optional[str]
     last_name: Optional[str]
+    photo_id: Optional[int] = None
     bot: bool = False
     verified: bool = False
     restricted: bool = False
@@ -27,6 +28,7 @@ class User:
             self.username,
             self.first_name,
             self.last_name,
+            self.photo_id,
             self.bot,
             self.verified,
             self.restricted,
@@ -41,6 +43,7 @@ class DatabaseManager:
     def __init__(self, db_name: str = "channel_users.db"):
         self.db_name = db_name
         self.connection = None
+        self._schema_upgraded = False
 
     async def init_database(self):
         """Инициализация базы данных и создание таблиц"""
@@ -52,6 +55,7 @@ class DatabaseManager:
                     username TEXT,
                     first_name TEXT,
                     last_name TEXT,
+                    photo_id INTEGER,
                     bot BOOLEAN DEFAULT FALSE,
                     verified BOOLEAN DEFAULT FALSE,
                     restricted BOOLEAN DEFAULT FALSE,
@@ -76,6 +80,7 @@ class DatabaseManager:
                     username TEXT,
                     first_name TEXT,
                     last_name TEXT,
+                    photo_id INTEGER,
                     bot BOOLEAN DEFAULT FALSE,
                     status TEXT,
                     last_online TEXT,
@@ -115,6 +120,21 @@ class DatabaseManager:
 
             await db.commit()
 
+        # Попытка добавить недостающие столбцы для существующих БД
+        if not self._schema_upgraded:
+            await self._upgrade_schema()
+            self._schema_upgraded = True
+
+    async def _upgrade_schema(self):
+        """Добавить новые столбцы, если они отсутствуют."""
+        async with aiosqlite.connect(self.db_name) as db:
+            for table in ("users", "deleted_users"):
+                try:
+                    await db.execute(f"ALTER TABLE {table} ADD COLUMN photo_id INTEGER")
+                except Exception:
+                    pass
+            await db.commit()
+
     async def insert_users_batch(self, users: List[User], channel_id: int, channel_username: str) -> int:
         """Пакетная вставка пользователей"""
         if not users:
@@ -129,9 +149,9 @@ class DatabaseManager:
             await db.executemany("""
                 INSERT OR REPLACE INTO users (
                     id, access_hash, username, first_name, last_name,
-                    bot, verified, restricted, status, last_online,
+                    photo_id, bot, verified, restricted, status, last_online,
                     premium, added_date, channel_id, channel_username
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, values)
 
             await db.commit()
@@ -249,12 +269,12 @@ class DatabaseManager:
             # Сначала перемещаем в таблицу deleted_users
             placeholders = ','.join(['?' for _ in user_ids])
             await db.execute(f"""
-                INSERT INTO deleted_users
+                INSERT OR IGNORE INTO deleted_users
                 (id, access_hash, username, first_name, last_name,
-                 bot, status, last_online, channel_id, channel_username,
+                 photo_id, bot, status, last_online, channel_id, channel_username,
                  deletion_reason, found_at)
                 SELECT id, access_hash, username, first_name, last_name,
-                       bot, status, last_online, channel_id, channel_username,
+                       photo_id, bot, status, last_online, channel_id, channel_username,
                        ?, ?
                 FROM users
                 WHERE id IN ({placeholders})
