@@ -29,12 +29,38 @@ project/
 
 ## Установка
 
-### 1. Клонирование и установка зависимостей
+### 1. Клонирование репозитория
 
 ```bash
 git clone https://github.com/xsa-dev/py-dir-fake-users-from-channel.git
 cd py-dir-fake-users-from-channel
+```
 
+### 2. Установка зависимостей
+
+#### Вариант A: Установка через uv (рекомендуется)
+
+```bash
+# Установка uv (если еще не установлен)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Установка зависимостей проекта
+uv sync
+
+# Запуск приложения
+uv run python run.py
+```
+
+Или через Makefile:
+
+```bash
+make install  # установить зависимости через uv
+make start    # запустить приложение
+```
+
+#### Вариант B: Установка через pip
+
+```bash
 # Активация виртуального окружения
 python -m venv .venv
 source .venv/bin/activate  # Для Windows: .venv\Scripts\activate
@@ -43,7 +69,7 @@ source .venv/bin/activate  # Для Windows: .venv\Scripts\activate
 pip install -e .
 ```
 
-### 2. Получение API ключей Telegram
+### 3. Получение API ключей Telegram
 
 1. Перейдите на [my.telegram.org](https://my.telegram.org)
 2. Войдите под своим аккаунтом
@@ -51,7 +77,7 @@ pip install -e .
 4. Создайте новое приложение
 5. Сохраните `api_id` и `api_hash`
 
-### 3. Настройка
+### 4. Настройка
 
 Скопируйте шаблон конфигурации:
 
@@ -88,15 +114,23 @@ DELETE_CONFIRMATION=true
 
 ### Запуск приложения
 
+#### Через uv (рекомендуется):
+
 ```bash
-python main.py
+uv run python run.py
 ```
 
-Или через `Makefile`:
+#### Через Makefile:
 
 ```bash
 make install  # установить зависимости через uv
 make start    # запустить приложение
+```
+
+#### Через pip (если использовали pip для установки):
+
+```bash
+python run.py
 ```
 
 ### Основной workflow
