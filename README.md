@@ -32,8 +32,8 @@ project/
 ### 1. Клонирование и установка зависимостей
 
 ```bash
-git clone <repository-url>
-cd py_dir_fake_users_from_channel
+git clone https://github.com/xsa-dev/py-dir-fake-users-from-channel.git
+cd py-dir-fake-users-from-channel
 
 # Активация виртуального окружения
 python -m venv .venv
@@ -218,11 +218,13 @@ async def scan_channel():
 
 ## Лицензия
 
-MIT License
+MIT License - см. [LICENSE](LICENSE) для деталей.
+
+Репозиторий: https://github.com/xsa-dev/py-dir-fake-users-from-channel
 
 ## Contributing
 
-1. Fork the repository
+1. Fork the repository: https://github.com/xsa-dev/py-dir-fake-users-from-channel
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
