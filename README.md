@@ -256,6 +256,10 @@ MIT License - см. [LICENSE](LICENSE) для деталей.
 
 Репозиторий: https://github.com/xsa-dev/py-dir-fake-users-from-channel
 
+## AI Assistance
+
+AI-assisted code (ChatGPT, Claude, Cursor).
+
 ## Contributing
 
 1. Fork the repository: https://github.com/xsa-dev/py-dir-fake-users-from-channel
